@@ -1,0 +1,5302 @@
+<!DOCTYPE html>
+
+<html lang="fa" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="theme-color" content="#000000">
+
+
+
+<title>Spotify Music Player</title>
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+
+
+<style>
+
+
+
+*{
+
+    margin:0;
+
+    padding:0;
+
+    box-sizing:border-box;
+
+}
+
+
+
+:root{
+
+    --green:#1ed760;
+
+    --green-dark:#1db954;
+
+
+
+    --black:#000;
+
+    --dark:#080808;
+
+    --dark2:#121212;
+
+    --dark3:#181818;
+
+    --dark4:#282828;
+
+
+
+    --white:#fff;
+
+    --gray:#b3b3b3;
+
+    --gray2:#777;
+
+
+
+    --glass:rgba(255,255,255,.055);
+
+    --border:rgba(255,255,255,.08);
+
+}
+
+
+
+/* =====================================================
+
+   LIGHT MODE
+
+===================================================== */
+
+
+
+body.light{
+
+    --black:#f5f5f5;
+
+    --dark:#f5f5f5;
+
+    --dark2:#ffffff;
+
+    --dark3:#eeeeee;
+
+    --dark4:#d8d8d8;
+
+
+
+    --white:#111;
+
+    --gray:#555;
+
+    --gray2:#777;
+
+
+
+    --glass:rgba(0,0,0,.045);
+
+    --border:rgba(0,0,0,.08);
+
+
+
+    background:#f5f5f5;
+
+    color:#111;
+
+}
+
+
+
+/* =====================================================
+
+   BODY
+
+===================================================== */
+
+
+
+html{
+
+    scroll-behavior:smooth;
+
+}
+
+
+
+body{
+
+    width:100%;
+
+    min-height:100vh;
+
+    background:#000;
+
+    color:var(--white);
+
+    font-family:"Vazirmatn",sans-serif;
+
+    overflow:hidden;
+
+
+
+    transition:
+
+        background .5s ease,
+
+        color .5s ease;
+
+}
+
+
+
+/* =====================================================
+
+   BACKGROUND
+
+===================================================== */
+
+
+
+.background{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:-10;
+
+    overflow:hidden;
+
+    background:#000;
+
+}
+
+
+
+.background-image{
+
+    position:absolute;
+
+
+
+    width:120%;
+
+    height:120%;
+
+
+
+    left:-10%;
+
+    top:-10%;
+
+
+
+    background-size:cover;
+
+    background-position:center;
+
+
+
+    filter:blur(80px);
+
+    transform:scale(1.15);
+
+
+
+    opacity:.45;
+
+
+
+    transition:
+
+        background-image .9s ease,
+
+        opacity .7s ease,
+
+        transform 1.2s ease;
+
+}
+
+
+
+.background-image::after{
+
+    content:"";
+
+
+
+    position:absolute;
+
+    inset:0;
+
+
+
+    background:
+
+        radial-gradient(
+
+            circle at 50% 25%,
+
+            rgba(30,215,96,.12),
+
+            transparent 35%
+
+        );
+
+
+
+    animation:
+
+        backgroundPulse 7s ease-in-out infinite;
+
+}
+
+
+
+.background-overlay{
+
+    position:absolute;
+
+    inset:0;
+
+
+
+    background:
+
+        linear-gradient(
+
+            180deg,
+
+            rgba(0,0,0,.25) 0%,
+
+            rgba(0,0,0,.63) 42%,
+
+            rgba(0,0,0,.96) 100%
+
+        );
+
+
+
+    transition:
+
+        background .5s ease;
+
+}
+
+
+
+body.light .background{
+
+    background:#f5f5f5;
+
+}
+
+
+
+body.light .background-image{
+
+    opacity:.17;
+
+    filter:blur(80px);
+
+}
+
+
+
+body.light .background-overlay{
+
+    background:
+
+        linear-gradient(
+
+            180deg,
+
+            rgba(255,255,255,.55),
+
+            rgba(255,255,255,.88)
+
+        );
+
+}
+
+
+
+@keyframes backgroundPulse{
+
+
+
+    0%,100%{
+
+        transform:scale(1);
+
+        opacity:.55;
+
+    }
+
+
+
+    50%{
+
+        transform:scale(1.12);
+
+        opacity:1;
+
+    }
+
+}
+
+
+
+/* =====================================================
+
+   APP
+
+===================================================== */
+
+
+
+.app{
+
+    width:100%;
+
+    height:100vh;
+
+
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+
+
+/* =====================================================
+
+   TOP BAR
+
+===================================================== */
+
+
+
+.topbar{
+
+    height:72px;
+
+    flex-shrink:0;
+
+
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+
+
+    padding:0 32px;
+
+
+
+    position:relative;
+
+    z-index:20;
+
+
+
+    background:
+
+        linear-gradient(
+
+            180deg,
+
+            rgba(0,0,0,.28),
+
+            transparent
+
+        );
+
+
+
+    transition:background .5s ease;
+
+}
+
+
+
+body.light .topbar{
+
+    background:
+
+        linear-gradient(
+
+            180deg,
+
+            rgba(255,255,255,.7),
+
+            transparent
+
+        );
+
+}
+
+
+
+.brand{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:11px;
+
+
+
+    font-size:20px;
+
+    font-weight:800;
+
+
+
+    user-select:none;
+
+}
+
+
+
+.spotify-logo{
+
+    width:34px;
+
+    height:34px;
+
+
+
+    border-radius:50%;
+
+
+
+    background:var(--green);
+
+
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+
+
+    color:#000;
+
+
+
+    font-size:20px;
+
+    font-weight:900;
+
+
+
+    box-shadow:
+
+        0 0 0 rgba(30,215,96,0);
+
+
+
+    animation:
+
+        logoGlow 3s ease-in-out infinite;
+
+}
+
+
+
+@keyframes logoGlow{
+
+
+
+    0%,100%{
+
+        box-shadow:
+
+            0 0 0 rgba(30,215,96,0);
+
+    }
+
+
+
+    50%{
+
+        box-shadow:
+
+            0 0 25px rgba(30,215,96,.35);
+
+    }
+
+}
+
+
+
+.top-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+
+
+.top-button{
+
+    width:42px;
+
+    height:42px;
+
+
+
+    border:1px solid var(--border);
+
+    border-radius:50%;
+
+
+
+    background:rgba(0,0,0,.35);
+
+
+
+    color:#fff;
+
+
+
+    cursor:pointer;
+
+
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+
+
+    font-size:17px;
+
+
+
+    transition:
+
+        transform .25s ease,
+
+        background .25s ease,
+
+        color .25s ease;
+
+}
+
+
+
+body.light .top-button{
+
+    background:rgba(255,255,255,.7);
+
+    color:#111;
+
+}
+
+
+
+.top-button:hover{
+
+    background:var(--green);
+
+    color:#000;
+
+
+
+    transform:
+
+        rotate(15deg)
+
+        scale(1.08);
+
+}
+
+
+
+/* =====================================================
+
+   CONTENT
+
+===================================================== */
+
+
+
+.content{
+
+    flex:1;
+
+    min-height:0;
+
+
+
+    overflow:auto;
+
+
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+
+
+    padding:
+
+        20px
+
+        30px
+
+        100px;
+
+}
+
+
+
+.content::-webkit-scrollbar{
+
+    width:7px;
+
+}
+
+
+
+.content::-webkit-scrollbar-thumb{
+
+    background:#444;
+
+    border-radius:20px;
+
+}
+
+
+
+/* =====================================================
+
+   PLAYER
+
+===================================================== */
+
+
+
+.player{
+
+    width:min(980px,100%);
+
+
+
+    display:grid;
+
+
+
+    grid-template-columns:
+
+        minmax(300px,400px)
+
+        minmax(300px,1fr);
+
+
+
+    align-items:center;
+
+
+
+    gap:70px;
+
+
+
+    padding:30px;
+
+
+
+    direction:ltr;
+
+
+
+    animation:
+
+        playerEnter .8s cubic-bezier(.2,.8,.2,1);
+
+}
+
+
+
+@keyframes playerEnter{
+
+
+
+    from{
+
+        opacity:0;
+
+        transform:
+
+            translateY(30px)
+
+            scale(.97);
+
+    }
+
+
+
+    to{
+
+        opacity:1;
+
+        transform:
+
+            translateY(0)
+
+            scale(1);
+
+    }
+
+}
+
+
+
+/* =====================================================
+
+   COVER
+
+===================================================== */
+
+
+
+.cover-wrapper{
+
+    position:relative;
+
+    width:100%;
+
+
+
+    isolation:isolate;
+
+}
+
+
+
+.cover-glow{
+
+    position:absolute;
+
+
+
+    inset:20px;
+
+
+
+    background-size:cover;
+
+    background-position:center;
+
+
+
+    filter:blur(40px);
+
+
+
+    opacity:.45;
+
+
+
+    transform:scale(.88);
+
+
+
+    z-index:-1;
+
+
+
+    transition:
+
+        background-image .8s ease,
+
+        opacity .8s ease,
+
+        transform 1s ease;
+
+}
+
+
+
+.cover-wrapper:hover .cover-glow{
+
+    transform:scale(.98);
+
+    opacity:.65;
+
+}
+
+
+
+.cover{
+
+    width:100%;
+
+    aspect-ratio:1/1;
+
+
+
+    object-fit:cover;
+
+
+
+    display:block;
+
+
+
+    border-radius:8px;
+
+
+
+    box-shadow:
+
+        0 30px 90px rgba(0,0,0,.75);
+
+
+
+    transition:
+
+        transform .8s cubic-bezier(.2,.8,.2,1),
+
+        box-shadow .8s ease,
+
+        filter .5s ease,
+
+        opacity .35s ease;
+
+}
+
+
+
+.cover:hover{
+
+    transform:
+
+        scale(1.025)
+
+        rotate(.3deg);
+
+
+
+    box-shadow:
+
+        0 35px 110px rgba(0,0,0,.85);
+
+}
+
+
+
+.cover.playing{
+
+    animation:
+
+        coverFloat 5s ease-in-out infinite;
+
+}
+
+
+
+@keyframes coverFloat{
+
+
+
+    0%,100%{
+
+        transform:scale(1);
+
+    }
+
+
+
+    50%{
+
+        transform:scale(1.012);
+
+    }
+
+}
+
+
+
+.cover.loading{
+
+    opacity:.25;
+
+    filter:blur(5px);
+
+    transform:scale(.96);
+
+}
+
+
+
+/* =====================================================
+
+   SONG INFO
+
+===================================================== */
+
+
+
+.song-info{
+
+    width:100%;
+
+
+
+    text-align:center;
+
+
+
+    direction:rtl;
+
+
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+}
+
+
+
+.now-playing{
+
+    color:var(--gray);
+
+
+
+    font-size:12px;
+
+    font-weight:600;
+
+
+
+    margin-bottom:14px;
+
+
+
+    letter-spacing:.2px;
+
+
+
+    opacity:.9;
+
+}
+
+
+
+.song-title{
+
+    width:100%;
+
+
+
+    font-size:
+
+        clamp(32px,4.5vw,60px);
+
+
+
+    line-height:1.2;
+
+
+
+    font-weight:900;
+
+
+
+    letter-spacing:-1.5px;
+
+
+
+    margin-bottom:10px;
+
+
+
+    word-break:break-word;
+
+
+
+    text-align:center;
+
+
+
+    text-shadow:
+
+        0 5px 25px rgba(0,0,0,.35);
+
+
+
+    transition:
+
+        color .5s ease;
+
+}
+
+
+
+.artist{
+
+    color:var(--gray);
+
+
+
+    font-size:18px;
+
+    font-weight:500;
+
+
+
+    text-align:center;
+
+
+
+    margin-bottom:30px;
+
+
+
+    cursor:default;
+
+
+
+    transition:
+
+        color .25s ease,
+
+        transform .25s ease;
+
+}
+
+
+
+.artist:hover{
+
+    color:var(--white);
+
+    transform:translateY(-2px);
+
+}
+
+
+
+/* =====================================================
+
+   SONG CHANGE
+
+===================================================== */
+
+
+
+.song-change{
+
+    animation:
+
+        textEnter .55s cubic-bezier(.2,.8,.2,1);
+
+}
+
+
+
+@keyframes textEnter{
+
+
+
+    0%{
+
+        opacity:0;
+
+        transform:
+
+            translateY(18px)
+
+            scale(.96);
+
+        filter:blur(7px);
+
+    }
+
+
+
+    100%{
+
+        opacity:1;
+
+        transform:
+
+            translateY(0)
+
+            scale(1);
+
+        filter:blur(0);
+
+    }
+
+}
+
+
+
+/* =====================================================
+
+   VISUALIZER
+
+===================================================== */
+
+
+
+.visualizer{
+
+    height:32px;
+
+
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+
+
+    gap:3px;
+
+
+
+    margin:
+
+        0 auto
+
+        20px;
+
+
+
+    opacity:.8;
+
+
+
+    direction:ltr;
+
+}
+
+
+
+.bar{
+
+    width:3px;
+
+    height:4px;
+
+
+
+    background:var(--green);
+
+
+
+    border-radius:5px;
+
+
+
+    box-shadow:
+
+        0 0 7px rgba(30,215,96,.25);
+
+}
+
+
+
+.visualizer.playing .bar{
+
+    animation:
+
+        wave .75s ease-in-out infinite alternate;
+
+}
+
+
+
+.bar:nth-child(1){animation-delay:-.10s}
+
+.bar:nth-child(2){animation-delay:-.30s}
+
+.bar:nth-child(3){animation-delay:-.50s}
+
+.bar:nth-child(4){animation-delay:-.20s}
+
+.bar:nth-child(5){animation-delay:-.70s}
+
+.bar:nth-child(6){animation-delay:-.40s}
+
+.bar:nth-child(7){animation-delay:-.60s}
+
+.bar:nth-child(8){animation-delay:-.15s}
+
+.bar:nth-child(9){animation-delay:-.35s}
+
+.bar:nth-child(10){animation-delay:-.55s}
+
+.bar:nth-child(11){animation-delay:-.25s}
+
+.bar:nth-child(12){animation-delay:-.65s}
+
+.bar:nth-child(13){animation-delay:-.45s}
+
+.bar:nth-child(14){animation-delay:-.75s}
+
+.bar:nth-child(15){animation-delay:-.20s}
+
+.bar:nth-child(16){animation-delay:-.50s}
+
+.bar:nth-child(17){animation-delay:-.30s}
+
+.bar:nth-child(18){animation-delay:-.60s}
+
+.bar:nth-child(19){animation-delay:-.40s}
+
+.bar:nth-child(20){animation-delay:-.70s}
+
+
+
+@keyframes wave{
+
+
+
+    0%{
+
+        height:3px;
+
+        opacity:.5;
+
+    }
+
+
+
+    100%{
+
+        height:28px;
+
+        opacity:1;
+
+    }
+
+}
+
+
+
+/* =====================================================
+
+   PROGRESS
+
+===================================================== */
+
+
+
+.progress-area{
+
+    width:100%;
+
+    max-width:620px;
+
+
+
+    margin:auto;
+
+}
+
+
+
+.progress{
+
+    width:100%;
+
+    height:5px;
+
+
+
+    background:rgba(255,255,255,.28);
+
+
+
+    border-radius:20px;
+
+
+
+    cursor:pointer;
+
+
+
+    position:relative;
+
+
+
+    direction:ltr;
+
+
+
+    transition:
+
+        height .2s ease,
+
+        background .2s ease;
+
+}
+
+
+
+body.light .progress{
+
+    background:rgba(0,0,0,.18);
+
+}
+
+
+
+.progress:hover{
+
+    height:7px;
+
+}
+
+
+
+.progress-fill{
+
+    position:absolute;
+
+
+
+    left:0;
+
+    top:0;
+
+
+
+    height:100%;
+
+    width:0%;
+
+
+
+    border-radius:20px;
+
+
+
+    background:#fff;
+
+
+
+    transition:
+
+        background .2s ease;
+
+}
+
+
+
+.progress:hover .progress-fill{
+
+    background:var(--green);
+
+}
+
+
+
+.progress-dot{
+
+    position:absolute;
+
+
+
+    top:50%;
+
+    left:0;
+
+
+
+    width:13px;
+
+    height:13px;
+
+
+
+    background:#fff;
+
+
+
+    border-radius:50%;
+
+
+
+    transform:
+
+        translate(-50%,-50%)
+
+        scale(.6);
+
+
+
+    opacity:0;
+
+
+
+    transition:
+
+        opacity .2s ease,
+
+        transform .2s ease;
+
+}
+
+
+
+.progress:hover .progress-dot{
+
+    opacity:1;
+
+    transform:
+
+        translate(-50%,-50%)
+
+        scale(1);
+
+}
+
+
+
+.time{
+
+    display:flex;
+
+
+
+    direction:ltr;
+
+
+
+    justify-content:space-between;
+
+
+
+    margin-top:8px;
+
+
+
+    color:var(--gray);
+
+
+
+    font-size:11px;
+
+}
+
+
+
+/* =====================================================
+
+   CONTROLS
+
+===================================================== */
+
+
+
+.controls{
+
+    display:flex;
+
+
+
+    align-items:center;
+
+    justify-content:center;
+
+
+
+    gap:22px;
+
+
+
+    margin:28px auto;
+
+
+
+    direction:ltr;
+
+}
+
+
+
+.control{
+
+    width:40px;
+
+    height:40px;
+
+
+
+    border:none;
+
+
+
+    background:none;
+
+
+
+    color:#b3b3b3;
+
+
+
+    cursor:pointer;
+
+
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+
+
+    transition:
+
+        color .2s ease,
+
+        transform .25s cubic-bezier(.2,.8,.2,1);
+
+}
+
+
+
+.control svg{
+
+    width:24px;
+
+    height:24px;
+
+
+
+    fill:currentColor;
+
+
+
+    stroke:currentColor;
+
+
+
+    transition:
+
+        transform .25s ease;
+
+}
+
+
+
+.control:hover{
+
+    color:#fff;
+
+
+
+    transform:
+
+        scale(1.14);
+
+}
+
+
+
+body.light .control{
+
+    color:#555;
+
+}
+
+
+
+body.light .control:hover{
+
+    color:#111;
+
+}
+
+
+
+.control.active{
+
+    color:var(--green);
+
+}
+
+
+
+.control.active::after{
+
+    content:"";
+
+
+
+    position:absolute;
+
+
+
+    width:4px;
+
+    height:4px;
+
+
+
+    margin-top:35px;
+
+
+
+    border-radius:50%;
+
+
+
+    background:var(--green);
+
+}
+
+
+
+/* =====================================================
+
+   PLAY BUTTON
+
+===================================================== */
+
+
+
+.play-button{
+
+    width:58px;
+
+    height:58px;
+
+
+
+    flex-shrink:0;
+
+
+
+    border-radius:50%;
+
+
+
+    background:#fff;
+
+
+
+    color:#000;
+
+
+
+    font-size:20px;
+
+
+
+    box-shadow:
+
+        0 10px 35px rgba(0,0,0,.35);
+
+
+
+    transition:
+
+        transform .25s cubic-bezier(.2,.8,.2,1),
+
+        box-shadow .25s ease;
+
+}
+
+
+
+.play-button:hover{
+
+    color:#000;
+
+    background:#fff;
+
+
+
+    transform:
+
+        scale(1.1);
+
+
+
+    box-shadow:
+
+        0 14px 40px rgba(0,0,0,.5);
+
+}
+
+
+
+.play-button:active{
+
+    transform:scale(.94);
+
+}
+
+
+
+/* =====================================================
+
+   BOTTOM CONTROLS
+
+===================================================== */
+
+
+
+.bottom-controls{
+
+    width:100%;
+
+    max-width:620px;
+
+
+
+    display:flex;
+
+
+
+    align-items:center;
+
+    justify-content:space-between;
+
+
+
+    direction:ltr;
+
+
+
+    margin:auto;
+
+}
+
+
+
+.left-tools,
+
+.right-tools{
+
+    display:flex;
+
+
+
+    align-items:center;
+
+
+
+    gap:12px;
+
+}
+
+
+
+.tool-button{
+
+    width:38px;
+
+    height:38px;
+
+
+
+    border:none;
+
+
+
+    background:none;
+
+
+
+    color:var(--gray);
+
+
+
+    cursor:pointer;
+
+
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+
+
+    font-size:20px;
+
+
+
+    transition:
+
+        color .2s ease,
+
+        transform .25s ease;
+
+}
+
+
+
+.tool-button:hover{
+
+    color:#fff;
+
+    transform:scale(1.12);
+
+}
+
+
+
+body.light .tool-button:hover{
+
+    color:#111;
+
+}
+
+
+
+.tool-button.active{
+
+    color:var(--green);
+
+}
+
+
+
+/* =====================================================
+
+   VOLUME
+
+===================================================== */
+
+
+
+.volume{
+
+    display:flex;
+
+
+
+    align-items:center;
+
+
+
+    gap:9px;
+
+
+
+    direction:ltr;
+
+}
+
+
+
+.volume-icon{
+
+    width:22px;
+
+
+
+    color:var(--gray);
+
+
+
+    font-size:16px;
+
+
+
+    cursor:pointer;
+
+
+
+    transition:
+
+        color .2s ease,
+
+        transform .2s ease;
+
+}
+
+
+
+.volume-icon:hover{
+
+    color:#fff;
+
+    transform:scale(1.1);
+
+}
+
+
+
+.volume-slider{
+
+    width:95px;
+
+    height:4px;
+
+
+
+    appearance:none;
+
+    -webkit-appearance:none;
+
+
+
+    border-radius:20px;
+
+
+
+    background:#4d4d4d;
+
+
+
+    cursor:pointer;
+
+
+
+    direction:ltr;
+
+}
+
+
+
+.volume-slider::-webkit-slider-thumb{
+
+    appearance:none;
+
+    -webkit-appearance:none;
+
+
+
+    width:12px;
+
+    height:12px;
+
+
+
+    border-radius:50%;
+
+
+
+    background:#fff;
+
+
+
+    cursor:pointer;
+
+
+
+    transition:
+
+        transform .2s ease;
+
+}
+
+
+
+.volume-slider:hover::-webkit-slider-thumb{
+
+    transform:scale(1.2);
+
+}
+
+
+
+.volume-slider::-moz-range-thumb{
+
+    width:12px;
+
+    height:12px;
+
+
+
+    border:none;
+
+    border-radius:50%;
+
+
+
+    background:#fff;
+
+
+
+    cursor:pointer;
+
+}
+
+
+
+/* =====================================================
+
+   GLOW ANIMATION
+
+===================================================== */
+
+
+
+.cover-wrapper::after{
+
+    content:"";
+
+
+
+    position:absolute;
+
+
+
+    inset:-2px;
+
+
+
+    border-radius:10px;
+
+
+
+    pointer-events:none;
+
+
+
+    border:1px solid rgba(255,255,255,.04);
+
+
+
+    opacity:.5;
+
+
+
+    animation:
+
+        borderPulse 4s ease-in-out infinite;
+
+}
+
+
+
+@keyframes borderPulse{
+
+
+
+    0%,100%{
+
+        opacity:.25;
+
+    }
+
+
+
+    50%{
+
+        opacity:.8;
+
+    }
+
+}
+
+
+
+/* =====================================================
+
+   MOBILE
+
+===================================================== */
+
+
+
+@media(max-width:850px){
+
+
+
+    body{
+
+        overflow:auto;
+
+    }
+
+
+
+    .app{
+
+        min-height:100vh;
+
+        height:auto;
+
+    }
+
+
+
+    .content{
+
+        align-items:flex-start;
+
+
+
+        padding:
+
+            15px
+
+            20px
+
+            70px;
+
+    }
+
+
+
+    .player{
+
+        grid-template-columns:1fr;
+
+
+
+        gap:30px;
+
+
+
+        width:min(520px,100%);
+
+
+
+        padding:20px 5px;
+
+
+
+        direction:rtl;
+
+    }
+
+
+
+    .cover-wrapper{
+
+        width:min(350px,82vw);
+
+
+
+        margin:auto;
+
+    }
+
+
+
+    .song-info{
+
+        text-align:center;
+
+    }
+
+
+
+    .song-title{
+
+        font-size:36px;
+
+    }
+
+
+
+    .artist{
+
+        font-size:16px;
+
+
+
+        margin-bottom:24px;
+
+    }
+
+
+
+    .visualizer{
+
+        justify-content:center;
+
+    }
+
+
+
+    .controls{
+
+        gap:15px;
+
+        margin:25px auto;
+
+    }
+
+
+
+    .bottom-controls{
+
+        padding:0 5px;
+
+    }
+
+}
+
+
+
+/* =====================================================
+
+   SMALL MOBILE
+
+===================================================== */
+
+
+
+@media(max-width:500px){
+
+
+
+    .topbar{
+
+        height:62px;
+
+        padding:0 17px;
+
+    }
+
+
+
+    .brand{
+
+        font-size:16px;
+
+    }
+
+
+
+    .spotify-logo{
+
+        width:29px;
+
+        height:29px;
+
+
+
+        font-size:16px;
+
+    }
+
+
+
+    .top-button{
+
+        width:39px;
+
+        height:39px;
+
+    }
+
+
+
+    .content{
+
+        padding:
+
+            8px
+
+            16px
+
+            45px;
+
+    }
+
+
+
+    .player{
+
+        padding:12px 0;
+
+        gap:25px;
+
+    }
+
+
+
+    .cover-wrapper{
+
+        width:min(330px,84vw);
+
+    }
+
+
+
+    .song-title{
+
+        font-size:29px;
+
+        letter-spacing:-.7px;
+
+    }
+
+
+
+    .artist{
+
+        font-size:15px;
+
+        margin-bottom:18px;
+
+    }
+
+
+
+    .visualizer{
+
+        margin-bottom:18px;
+
+    }
+
+
+
+    .controls{
+
+        gap:7px;
+
+        margin:22px auto;
+
+    }
+
+
+
+    .control{
+
+        width:42px;
+
+        height:42px;
+
+    }
+
+
+
+    .control svg{
+
+        width:22px;
+
+        height:22px;
+
+    }
+
+
+
+    .play-button{
+
+        width:58px;
+
+        height:58px;
+
+    }
+
+
+
+    .bottom-controls{
+
+        justify-content:center;
+
+
+
+        flex-wrap:wrap;
+
+
+
+        gap:14px;
+
+    }
+
+
+
+    .volume-slider{
+
+        width:100px;
+
+    }
+
+}
+
+
+
+/* =====================================================
+
+   VERY SMALL
+
+===================================================== */
+
+
+
+@media(max-width:360px){
+
+
+
+    .cover-wrapper{
+
+        width:78vw;
+
+    }
+
+
+
+    .song-title{
+
+        font-size:25px;
+
+    }
+
+
+
+    .controls{
+
+        gap:0;
+
+    }
+
+
+
+    .volume-slider{
+
+        width:80px;
+
+    }
+
+}
+
+
+
+/* =====================================================
+
+   REDUCED MOTION
+
+===================================================== */
+
+
+
+@media(prefers-reduced-motion:reduce){
+
+
+
+    *,
+
+    *::before,
+
+    *::after{
+
+        animation-duration:.01ms!important;
+
+        animation-iteration-count:1!important;
+
+        transition-duration:.01ms!important;
+
+    }
+
+
+
+}
+
+
+
+</style>
+
+</head>
+
+
+
+<body>
+
+
+
+<!-- =====================================================
+
+     BACKGROUND
+
+===================================================== -->
+
+
+
+<div class="background">
+
+
+
+    <div
+
+        class="background-image"
+
+        id="backgroundImage">
+
+    </div>
+
+
+
+    <div class="background-overlay"></div>
+
+
+
+</div>
+
+
+
+
+
+<!-- =====================================================
+
+     APP
+
+===================================================== -->
+
+
+
+<div class="app">
+
+
+
+
+
+    <!-- TOP BAR -->
+
+
+
+    <header class="topbar">
+
+
+
+        <div class="brand">
+
+
+
+            <div class="spotify-logo">
+
+                ♪
+
+            </div>
+
+
+
+            <span>Music Player</span>
+
+
+
+        </div>
+
+
+
+
+
+        <div class="top-actions">
+
+
+
+            <button
+
+                class="top-button"
+
+                id="themeBtn"
+
+                title="حالت روز / شب">
+
+
+
+                ◐
+
+
+
+            </button>
+
+
+
+        </div>
+
+
+
+    </header>
+
+
+
+
+
+
+
+    <!-- CONTENT -->
+
+
+
+    <main class="content">
+
+
+
+        <section class="player">
+
+
+
+
+
+            <!-- COVER -->
+
+
+
+            <div class="cover-wrapper">
+
+
+
+                <div
+
+                    class="cover-glow"
+
+                    id="coverGlow">
+
+                </div>
+
+
+
+                <img
+
+                    src="covers/song1.jpg"
+
+                    id="cover"
+
+                    class="cover"
+
+                    alt="Album Cover">
+
+
+
+            </div>
+
+
+
+
+
+
+
+            <!-- SONG INFO -->
+
+
+
+            <div class="song-info">
+
+
+
+                <div class="now-playing">
+
+                </div>
+
+
+
+
+
+                <h1
+
+                    class="song-title"
+
+                    id="songTitle">
+
+
+
+                    آهنگ اول
+
+
+
+                </h1>
+
+
+
+
+
+                <div
+
+                    class="artist"
+
+                    id="artist">
+
+
+
+                    خواننده اول
+
+
+
+                </div>
+
+
+
+
+
+
+
+                <!-- VISUALIZER -->
+
+
+
+                <div
+
+                    class="visualizer"
+
+                    id="visualizer">
+
+
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+                    <span class="bar"></span>
+
+
+
+                </div>
+
+
+
+
+
+
+
+                <!-- PROGRESS -->
+
+
+
+                <div class="progress-area">
+
+
+
+                    <div
+
+                        class="progress"
+
+                        id="progress">
+
+
+
+                        <div
+
+                            class="progress-fill"
+
+                            id="progressFill">
+
+                        </div>
+
+
+
+                        <div
+
+                            class="progress-dot"
+
+                            id="progressDot">
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+
+                    <div class="time">
+
+
+
+                        <span id="currentTime">
+
+                            0:00
+
+                        </span>
+
+
+
+                        <span id="duration">
+
+                            0:00
+
+                        </span>
+
+
+
+                    </div>
+
+
+
+                </div>
+
+
+
+
+
+
+
+                <!-- CONTROLS -->
+
+
+
+                <div class="controls">
+
+
+
+
+
+                    <!-- SHUFFLE -->
+
+
+
+                    <button
+
+                        class="control"
+
+                        id="shuffleBtn"
+
+                        title="پخش تصادفی">
+
+
+
+                        <svg
+
+                            viewBox="0 0 24 24"
+
+                            aria-hidden="true">
+
+
+
+                            <path d="M17 3h4v4h-2V6.41l-3.29 3.3-1.42-1.42L17.59 5H17V3zM3 6h3.17l5.41 5.41-1.42 1.42L5.34 8H3V6zm14.83 10H21v2h-4.17l-3.42-3.42 1.42-1.42L17.83 16zM3 18h2.34l3.3-3.29 1.41 1.41L6.17 20H3v-2z"/>
+
+
+
+                        </svg>
+
+
+
+                    </button>
+
+
+
+
+
+
+
+                    <!-- PREVIOUS -->
+
+
+
+                    <button
+
+                        class="control"
+
+                        id="prevBtn"
+
+                        title="قبلی">
+
+
+
+                        <svg
+
+                            viewBox="0 0 24 24"
+
+                            aria-hidden="true">
+
+
+
+                            <path d="M6 5h2v14H6V5zm3 7 10-7v14L9 12z"/>
+
+
+
+                        </svg>
+
+
+
+                    </button>
+
+
+
+
+
+
+
+                    <!-- PLAY -->
+
+
+
+                    <button
+
+                        class="control play-button"
+
+                        id="playBtn"
+
+                        title="پخش">
+
+
+
+                        ▶
+
+
+
+                    </button>
+
+
+
+
+
+
+
+                    <!-- NEXT -->
+
+
+
+                    <button
+
+                        class="control"
+
+                        id="nextBtn"
+
+                        title="بعدی">
+
+
+
+                        <svg
+
+                            viewBox="0 0 24 24"
+
+                            aria-hidden="true">
+
+
+
+                            <path d="M16 5h2v14h-2V5zM5 5l10 7-10 7V5z"/>
+
+
+
+                        </svg>
+
+
+
+                    </button>
+
+
+
+
+
+
+
+                    <!-- REPEAT -->
+
+
+
+                    <button
+
+                        class="control"
+
+                        id="repeatBtn"
+
+                        title="تکرار">
+
+
+
+                        <svg
+
+                            viewBox="0 0 24 24"
+
+                            aria-hidden="true">
+
+
+
+                            <path d="M17 7H7.83l1.59-1.59L8 4 4 8l4 4 1.42-1.41L7.83 9H17c1.1 0 2 .9 2 2v2h2v-2c0-2.21-1.79-4-4-4zm0 8H7c-1.1 0-2-.9-2-2v-2H3v2c0 2.21 1.79 4 4 4h9.17l-1.59 1.59L16 20l4-4-4-4-1.41 1.41L16.17 15H17z"/>
+
+
+
+                        </svg>
+
+
+
+                    </button>
+
+
+
+                </div>
+
+
+
+
+
+
+
+                <!-- BOTTOM CONTROLS -->
+
+
+
+                <div class="bottom-controls">
+
+
+
+
+
+                    <div class="left-tools">
+
+
+
+                        <button
+
+                            class="tool-button"
+
+                            id="likeBtn"
+
+                            title="پسندیدن">
+
+
+
+                            ♡
+
+
+
+                        </button>
+
+
+
+                    </div>
+
+
+
+
+
+                    <div class="right-tools">
+
+
+
+                        <div class="volume">
+
+
+
+                            <span
+
+                                class="volume-icon"
+
+                                id="volumeIcon"
+
+                                title="صدا">
+
+
+
+                                🔊
+
+
+
+                            </span>
+
+
+
+
+
+                            <input
+
+                                type="range"
+
+                                class="volume-slider"
+
+                                id="volumeSlider"
+
+                                min="0"
+
+                                max="1"
+
+                                step="0.01"
+
+                                value="0.8">
+
+
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+                </div>
+
+
+
+            </div>
+
+
+
+        </section>
+
+
+
+    </main>
+
+
+
+</div>
+
+
+
+
+
+
+
+<!-- =====================================================
+
+     AUDIO
+
+===================================================== -->
+
+
+
+<audio
+
+    id="audio"
+
+    preload="metadata">
+
+</audio>
+
+
+
+
+
+
+
+<script>
+
+
+
+/* =====================================================
+
+   آهنگ‌ها
+
+===================================================== */
+
+
+
+const songs = [
+
+
+
+    {
+
+        title: "Jane Javani",
+
+        artist: "Ebi",
+
+        file: "Ebi - Jane Javani.mp3",
+
+        cover: "song1.jpg"
+
+    },
+
+{
+
+        title: "Goriz",
+
+        artist: "Ebi",
+
+        file: "Goriz.mp3",
+
+        cover: "song2.jpg"
+
+    },
+];
+
+
+
+
+
+/* =====================================================
+
+   ELEMENTS
+
+===================================================== */
+
+
+
+const audio =
+
+    document.getElementById("audio");
+
+
+
+const cover =
+
+    document.getElementById("cover");
+
+
+
+const coverGlow =
+
+    document.getElementById("coverGlow");
+
+
+
+const backgroundImage =
+
+    document.getElementById("backgroundImage");
+
+
+
+const songTitle =
+
+    document.getElementById("songTitle");
+
+
+
+const artist =
+
+    document.getElementById("artist");
+
+
+
+const playBtn =
+
+    document.getElementById("playBtn");
+
+
+
+const prevBtn =
+
+    document.getElementById("prevBtn");
+
+
+
+const nextBtn =
+
+    document.getElementById("nextBtn");
+
+
+
+const shuffleBtn =
+
+    document.getElementById("shuffleBtn");
+
+
+
+const repeatBtn =
+
+    document.getElementById("repeatBtn");
+
+
+
+const progress =
+
+    document.getElementById("progress");
+
+
+
+const progressFill =
+
+    document.getElementById("progressFill");
+
+
+
+const progressDot =
+
+    document.getElementById("progressDot");
+
+
+
+const currentTime =
+
+    document.getElementById("currentTime");
+
+
+
+const duration =
+
+    document.getElementById("duration");
+
+
+
+const volumeSlider =
+
+    document.getElementById("volumeSlider");
+
+
+
+const volumeIcon =
+
+    document.getElementById("volumeIcon");
+
+
+
+const visualizer =
+
+    document.getElementById("visualizer");
+
+
+
+const themeBtn =
+
+    document.getElementById("themeBtn");
+
+
+
+const likeBtn =
+
+    document.getElementById("likeBtn");
+
+
+
+
+
+/* =====================================================
+
+   VARIABLES
+
+===================================================== */
+
+
+
+let currentIndex = 0;
+
+
+
+let isPlaying = false;
+
+
+
+let shuffle = false;
+
+
+
+let repeat = false;
+
+
+
+let liked = false;
+
+
+
+
+
+
+
+/* =====================================================
+
+   LOAD SONG
+
+===================================================== */
+
+
+
+function loadSong(index){
+
+
+
+    if(!songs.length){
+
+        return;
+
+    }
+
+
+
+    if(index < 0){
+
+        index = songs.length - 1;
+
+    }
+
+
+
+    if(index >= songs.length){
+
+        index = 0;
+
+    }
+
+
+
+    currentIndex = index;
+
+
+
+    const song = songs[currentIndex];
+
+
+
+
+
+    /* AUDIO */
+
+
+
+    audio.pause();
+
+
+
+    audio.src = song.file;
+
+
+
+
+
+    /* COVER */
+
+
+
+    cover.classList.add("loading");
+
+
+
+    cover.src = song.cover;
+
+
+
+
+
+    /* BACKGROUND */
+
+
+
+    backgroundImage.style.backgroundImage =
+
+        `url("${song.cover}")`;
+
+
+
+    coverGlow.style.backgroundImage =
+
+        `url("${song.cover}")`;
+
+
+
+
+
+    /* TEXT */
+
+
+
+    songTitle.textContent =
+
+        song.title;
+
+
+
+    artist.textContent =
+
+        song.artist;
+
+
+
+
+
+    document.title =
+
+        song.title + " | Music Player";
+
+
+
+
+
+    /* RESET */
+
+
+
+    progressFill.style.width =
+
+        "0%";
+
+
+
+    progressDot.style.left =
+
+        "0%";
+
+
+
+    currentTime.textContent =
+
+        "0:00";
+
+
+
+    duration.textContent =
+
+        "0:00";
+
+
+
+
+
+    /* TEXT ANIMATION */
+
+
+
+    songTitle.classList.remove(
+
+        "song-change"
+
+    );
+
+
+
+    artist.classList.remove(
+
+        "song-change"
+
+    );
+
+
+
+    void songTitle.offsetWidth;
+
+
+
+    songTitle.classList.add(
+
+        "song-change"
+
+    );
+
+
+
+    artist.classList.add(
+
+        "song-change"
+
+    );
+
+
+
+
+
+    audio.load();
+
+
+
+}
+
+
+
+
+
+/* =====================================================
+
+   COVER LOADED
+
+===================================================== */
+
+
+
+cover.addEventListener(
+
+    "load",
+
+    () => {
+
+
+
+        cover.classList.remove(
+
+            "loading"
+
+        );
+
+
+
+    }
+
+);
+
+
+
+
+
+/* =====================================================
+
+   PLAY
+
+===================================================== */
+
+
+
+function playSong(){
+
+
+
+    audio.play()
+
+        .then(() => {
+
+
+
+            isPlaying = true;
+
+
+
+            updateUI();
+
+
+
+        })
+
+        .catch(() => {
+
+
+
+            isPlaying = false;
+
+
+
+            updateUI();
+
+
+
+        });
+
+
+
+}
+
+
+
+
+
+/* =====================================================
+
+   PAUSE
+
+===================================================== */
+
+
+
+function pauseSong(){
+
+
+
+    audio.pause();
+
+
+
+    isPlaying = false;
+
+
+
+    updateUI();
+
+
+
+}
+
+
+
+
+
+/* =====================================================
+
+   TOGGLE PLAY
+
+===================================================== */
+
+
+
+function togglePlay(){
+
+
+
+    if(audio.paused){
+
+
+
+        playSong();
+
+
+
+    }else{
+
+
+
+        pauseSong();
+
+
+
+    }
+
+
+
+}
+
+
+
+
+
+/* =====================================================
+
+   UPDATE UI
+
+===================================================== */
+
+
+
+function updateUI(){
+
+
+
+    if(isPlaying){
+
+
+
+        playBtn.textContent =
+
+            "❚❚";
+
+
+
+        cover.classList.add(
+
+            "playing"
+
+        );
+
+
+
+        visualizer.classList.add(
+
+            "playing"
+
+        );
+
+
+
+    }else{
+
+
+
+        playBtn.textContent =
+
+            "▶";
+
+
+
+        cover.classList.remove(
+
+            "playing"
+
+        );
+
+
+
+        visualizer.classList.remove(
+
+            "playing"
+
+        );
+
+
+
+    }
+
+
+
+}
+
+
+
+
+
+/* =====================================================
+
+   NEXT
+
+===================================================== */
+
+
+
+function nextSong(){
+
+
+
+    if(!songs.length){
+
+        return;
+
+    }
+
+
+
+
+
+    if(shuffle && songs.length > 1){
+
+
+
+        let newIndex;
+
+
+
+        do{
+
+
+
+            newIndex =
+
+                Math.floor(
+
+                    Math.random() *
+
+                    songs.length
+
+                );
+
+
+
+        }while(
+
+            newIndex === currentIndex
+
+        );
+
+
+
+        currentIndex =
+
+            newIndex;
+
+
+
+    }else{
+
+
+
+        currentIndex++;
+
+
+
+        if(
+
+            currentIndex >=
+
+            songs.length
+
+        ){
+
+
+
+            currentIndex = 0;
+
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+    loadSong(
+
+        currentIndex
+
+    );
+
+
+
+    playSong();
+
+
+
+}
+
+
+
+
+
+/* =====================================================
+
+   PREVIOUS
+
+===================================================== */
+
+
+
+function previousSong(){
+
+
+
+    if(!songs.length){
+
+        return;
+
+    }
+
+
+
+
+
+    /*
+
+       اگر آهنگ بیشتر از ۳ ثانیه پخش شده،
+
+       قبلی نرو؛ آهنگ از اول شروع شود.
+
+    */
+
+
+
+    if(audio.currentTime > 3){
+
+
+
+        audio.currentTime = 0;
+
+
+
+        return;
+
+
+
+    }
+
+
+
+
+
+    currentIndex--;
+
+
+
+    if(currentIndex < 0){
+
+
+
+        currentIndex =
+
+            songs.length - 1;
+
+
+
+    }
+
+
+
+
+
+    loadSong(
+
+        currentIndex
+
+    );
+
+
+
+    playSong();
+
+
+
+}
+
+
+
+
+
+/* =====================================================
+
+   BUTTONS
+
+===================================================== */
+
+
+
+playBtn.addEventListener(
+
+    "click",
+
+    togglePlay
+
+);
+
+
+
+nextBtn.addEventListener(
+
+    "click",
+
+    nextSong
+
+);
+
+
+
+prevBtn.addEventListener(
+
+    "click",
+
+    previousSong
+
+);
+
+
+
+
+
+/* =====================================================
+
+   SHUFFLE
+
+===================================================== */
+
+
+
+shuffleBtn.addEventListener(
+
+    "click",
+
+    () => {
+
+
+
+        shuffle =
+
+            !shuffle;
+
+
+
+        shuffleBtn.classList.toggle(
+
+            "active",
+
+            shuffle
+
+        );
+
+
+
+    }
+
+);
+
+
+
+
+
+/* =====================================================
+
+   REPEAT
+
+===================================================== */
+
+
+
+repeatBtn.addEventListener(
+
+    "click",
+
+    () => {
+
+
+
+        repeat =
+
+            !repeat;
+
+
+
+        repeatBtn.classList.toggle(
+
+            "active",
+
+            repeat
+
+        );
+
+
+
+    }
+
+);
+
+
+
+
+
+/* =====================================================
+
+   SONG END
+
+===================================================== */
+
+
+
+audio.addEventListener(
+
+    "ended",
+
+    () => {
+
+
+
+        if(repeat){
+
+
+
+            audio.currentTime = 0;
+
+
+
+            playSong();
+
+
+
+        }else{
+
+
+
+            nextSong();
+
+
+
+        }
+
+
+
+    }
+
+);
+
+
+
+
+
+/* =====================================================
+
+   TIME UPDATE
+
+===================================================== */
+
+
+
+audio.addEventListener(
+
+    "timeupdate",
+
+    () => {
+
+
+
+        if(!audio.duration){
+
+            return;
+
+        }
+
+
+
+        const percent =
+
+            (
+
+                audio.currentTime /
+
+                audio.duration
+
+            ) * 100;
+
+
+
+
+
+        progressFill.style.width =
+
+            percent + "%";
+
+
+
+        progressDot.style.left =
+
+            percent + "%";
+
+
+
+
+
+        currentTime.textContent =
+
+            formatTime(
+
+                audio.currentTime
+
+            );
+
+
+
+    }
+
+);
+
+
+
+
+
+/* =====================================================
+
+   DURATION
+
+===================================================== */
+
+
+
+audio.addEventListener(
+
+    "loadedmetadata",
+
+    () => {
+
+
+
+        duration.textContent =
+
+            formatTime(
+
+                audio.duration
+
+            );
+
+
+
+    }
+
+);
+
+
+
+
+
+/* =====================================================
+
+   FORMAT TIME
+
+===================================================== */
+
+
+
+function formatTime(seconds){
+
+
+
+    if(!isFinite(seconds)){
+
+        return "0:00";
+
+    }
+
+
+
+    const minutes =
+
+        Math.floor(
+
+            seconds / 60
+
+        );
+
+
+
+    const secs =
+
+        Math.floor(
+
+            seconds % 60
+
+        );
+
+
+
+    return (
+
+        minutes +
+
+        ":" +
+
+        String(secs)
+
+            .padStart(2,"0")
+
+    );
+
+
+
+}
+
+
+
+
+
+/* =====================================================
+
+   PROGRESS SEEK
+
+===================================================== */
+
+
+
+function seek(event){
+
+
+
+    if(!audio.duration){
+
+        return;
+
+    }
+
+
+
+    const rect =
+
+        progress.getBoundingClientRect();
+
+
+
+
+
+    let percent =
+
+        (
+
+            event.clientX -
+
+            rect.left
+
+        ) /
+
+        rect.width;
+
+
+
+
+
+    percent =
+
+        Math.max(
+
+            0,
+
+            Math.min(
+
+                1,
+
+                percent
+
+            )
+
+        );
+
+
+
+
+
+    audio.currentTime =
+
+        percent *
+
+        audio.duration;
+
+
+
+}
+
+
+
+
+
+progress.addEventListener(
+
+    "click",
+
+    seek
+
+);
+
+
+
+
+
+/* =====================================================
+
+   VOLUME
+
+===================================================== */
+
+
+
+const savedVolume = localStorage.getItem("music-player-volume");
+
+
+
+let currentVolume = savedVolume !== null
+
+    ? Number(savedVolume)
+
+    : 0.8;
+
+
+
+if(!Number.isFinite(currentVolume)){
+
+    currentVolume = 0.8;
+
+}
+
+
+
+currentVolume = Math.max(0, Math.min(1, currentVolume));
+
+
+
+let previousVolume = currentVolume > 0
+
+    ? currentVolume
+
+    : 0.8;
+
+
+
+
+
+/* مقدار اولیه واقعی صدای HTML Audio */
+
+audio.volume = currentVolume;
+
+volumeSlider.value = String(currentVolume);
+
+
+
+
+
+/* تغییر واقعی صدا */
+
+function setVolume(value){
+
+
+
+    let volume = Number(value);
+
+
+
+    if(!Number.isFinite(volume)){
+
+        volume = 0.8;
+
+    }
+
+
+
+    volume = Math.max(0, Math.min(1, volume));
+
+
+
+    /* این خط مستقیماً صدای آهنگ را تغییر می‌دهد */
+
+    audio.volume = volume;
+
+
+
+    /* هماهنگ کردن اسلایدر */
+
+    volumeSlider.value = String(volume);
+
+
+
+    if(volume > 0){
+
+        previousVolume = volume;
+
+    }
+
+
+
+    localStorage.setItem(
+
+        "music-player-volume",
+
+        String(volume)
+
+    );
+
+
+
+    updateVolumeIcon();
+
+}
+
+
+
+
+
+/* حرکت اسلایدر */
+
+volumeSlider.addEventListener(
+
+    "input",
+
+    function(event){
+
+        setVolume(event.target.value);
+
+    }
+
+);
+
+
+
+volumeSlider.addEventListener(
+
+    "change",
+
+    function(event){
+
+        setVolume(event.target.value);
+
+    }
+
+);
+
+
+
+
+
+/* کلیک روی آیکون = قطع/وصل صدا */
+
+volumeIcon.addEventListener(
+
+    "click",
+
+    function(){
+
+
+
+        if(audio.volume > 0){
+
+
+
+            previousVolume = audio.volume;
+
+
+
+            setVolume(0);
+
+
+
+        }else{
+
+
+
+            setVolume(
+
+                previousVolume > 0
+
+                    ? previousVolume
+
+                    : 0.8
+
+            );
+
+
+
+        }
+
+
+
+    }
+
+);
+
+
+
+
+
+/* آیکون صدا */
+
+function updateVolumeIcon(){
+
+
+
+    const value = Number(audio.volume);
+
+
+
+    if(value <= 0){
+
+
+
+        volumeIcon.textContent = "🔇";
+
+        volumeIcon.title = "فعال کردن صدا";
+
+
+
+    }else if(value < 0.33){
+
+
+
+        volumeIcon.textContent = "🔈";
+
+        volumeIcon.title = "قطع صدا";
+
+
+
+    }else if(value < 0.66){
+
+
+
+        volumeIcon.textContent = "🔉";
+
+        volumeIcon.title = "قطع صدا";
+
+
+
+    }else{
+
+
+
+        volumeIcon.textContent = "🔊";
+
+        volumeIcon.title = "قطع صدا";
+
+
+
+    }
+
+
+
+}
+
+
+
+
+
+/* اگر ولوم از جای دیگری تغییر کرد، آیکون هم هماهنگ شود */
+
+audio.addEventListener(
+
+    "volumechange",
+
+    function(){
+
+
+
+        const value = Number(audio.volume);
+
+
+
+        volumeSlider.value = String(value);
+
+
+
+        if(value > 0){
+
+            previousVolume = value;
+
+        }
+
+
+
+        updateVolumeIcon();
+
+
+
+    }
+
+);
+
+
+
+/* =====================================================
+
+   LIKE
+
+===================================================== */
+
+
+
+likeBtn.addEventListener(
+
+    "click",
+
+    () => {
+
+
+
+        liked =
+
+            !liked;
+
+
+
+
+
+        if(liked){
+
+
+
+            likeBtn.textContent =
+
+                "♥";
+
+
+
+            likeBtn.classList.add(
+
+                "active"
+
+            );
+
+
+
+        }else{
+
+
+
+            likeBtn.textContent =
+
+                "♡";
+
+
+
+            likeBtn.classList.remove(
+
+                "active"
+
+            );
+
+
+
+        }
+
+
+
+    }
+
+);
+
+
+
+
+
+/* =====================================================
+
+   THEME
+
+===================================================== */
+
+
+
+themeBtn.addEventListener(
+
+    "click",
+
+    () => {
+
+
+
+        document.body.classList.toggle(
+
+            "light"
+
+        );
+
+
+
+
+
+        if(
+
+            document.body.classList.contains(
+
+                "light"
+
+            )
+
+        ){
+
+
+
+            themeBtn.textContent =
+
+                "☀";
+
+
+
+            document
+
+                .querySelector(
+
+                    'meta[name="theme-color"]'
+
+                )
+
+                .setAttribute(
+
+                    "content",
+
+                    "#f5f5f5"
+
+                );
+
+
+
+        }else{
+
+
+
+            themeBtn.textContent =
+
+                "◐";
+
+
+
+            document
+
+                .querySelector(
+
+                    'meta[name="theme-color"]'
+
+                )
+
+                .setAttribute(
+
+                    "content",
+
+                    "#000000"
+
+                );
+
+
+
+        }
+
+
+
+    }
+
+);
+
+
+
+
+
+/* =====================================================
+
+   KEYBOARD
+
+===================================================== */
+
+
+
+document.addEventListener(
+
+    "keydown",
+
+    (event) => {
+
+
+
+        if(
+
+            event.code === "Space" &&
+
+            event.target.tagName !== "INPUT"
+
+        ){
+
+
+
+            event.preventDefault();
+
+
+
+            togglePlay();
+
+
+
+        }
+
+
+
+
+
+        if(
+
+            event.key === "ArrowRight"
+
+        ){
+
+
+
+            nextSong();
+
+
+
+        }
+
+
+
+
+
+        if(
+
+            event.key === "ArrowLeft"
+
+        ){
+
+
+
+            previousSong();
+
+
+
+        }
+
+
+
+
+
+        if(
+
+            event.key.toLowerCase() === "m"
+
+        ){
+
+
+
+            volumeIcon.click();
+
+
+
+        }
+
+
+
+
+
+        if(
+
+            event.key.toLowerCase() === "l"
+
+        ){
+
+
+
+            likeBtn.click();
+
+
+
+        }
+
+
+
+    }
+
+);
+
+
+
+
+
+/* =====================================================
+
+   COVER ERROR
+
+===================================================== */
+
+
+
+cover.addEventListener(
+
+    "error",
+
+    () => {
+
+
+
+        cover.src =
+
+            "data:image/svg+xml;charset=UTF-8," +
+
+            encodeURIComponent(`
+
+
+
+                <svg
+
+                    xmlns="http://www.w3.org/2000/svg"
+
+                    width="600"
+
+                    height="600">
+
+
+
+                    <defs>
+
+
+
+                        <linearGradient
+
+                            id="g"
+
+                            x1="0"
+
+                            y1="0"
+
+                            x2="1"
+
+                            y2="1">
+
+
+
+                            <stop
+
+                                offset="0%"
+
+                                stop-color="#1ed760"/>
+
+
+
+                            <stop
+
+                                offset="100%"
+
+                                stop-color="#111"/>
+
+
+
+                        </linearGradient>
+
+
+
+                    </defs>
+
+
+
+                    <rect
+
+                        width="600"
+
+                        height="600"
+
+                        fill="url(#g)"/>
+
+
+
+                    <text
+
+                        x="300"
+
+                        y="350"
+
+                        text-anchor="middle"
+
+                        font-family="Arial"
+
+                        font-size="180"
+
+                        fill="white">
+
+
+
+                        ♪
+
+
+
+                    </text>
+
+
+
+                </svg>
+
+
+
+            `);
+
+
+
+    }
+
+);
+
+
+
+
+
+/* =====================================================
+
+   SAVE THEME
+
+===================================================== */
+
+
+
+const savedTheme =
+
+    localStorage.getItem(
+
+        "music-player-theme"
+
+    );
+
+
+
+
+
+if(savedTheme === "light"){
+
+
+
+    document.body.classList.add(
+
+        "light"
+
+    );
+
+
+
+    themeBtn.textContent =
+
+        "☀";
+
+
+
+}
+
+
+
+
+
+/* =====================================================
+
+   SAVE THEME WHEN CHANGED
+
+===================================================== */
+
+
+
+themeBtn.addEventListener(
+
+    "click",
+
+    () => {
+
+
+
+        localStorage.setItem(
+
+            "music-player-theme",
+
+            document.body.classList.contains(
+
+                "light"
+
+            )
+
+            ? "light"
+
+            : "dark"
+
+        );
+
+
+
+    }
+
+);
+
+
+
+
+
+/* =====================================================
+
+   START
+
+===================================================== */
+
+
+
+loadSong(0);
+
+
+
+updateVolumeIcon();
+
+
+
+updateUI();
+
+
+
+</script>
+
+
+
+</body>
+
+</html>
